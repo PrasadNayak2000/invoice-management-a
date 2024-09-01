@@ -75,6 +75,7 @@ class InvoiceControllerTest {
 
     @Test
     void testGetAllInvoices() throws Exception {
+        Mockito.when(invoiceService.getAllInvoices()).thenReturn(new ResponseEntity<>(HttpStatus.OK));
         mockMvc.perform(get("/invoices"))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(0));
@@ -85,12 +86,15 @@ class InvoiceControllerTest {
         InvoicePaymentRequest request = new InvoicePaymentRequest();
         request.setAmount(200.00);
 
+        Mockito.when(invoiceService.doPayment(1, request)).thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
         mockMvc.perform(put("/invoices/1/payments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"amount\":200.00}"))
                 .andExpect(status().isNotFound());
     }
 
+    //Invalid request
     @Test
     void testDoPaymentFailure() throws Exception {
         InvoicePaymentRequest request = new InvoicePaymentRequest();
