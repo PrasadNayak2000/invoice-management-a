@@ -2,7 +2,7 @@ package com.eg.invoicemanagement.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.sql.Date;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +23,7 @@ public class InvoiceResponse {
     private Double paidAmount;
 
     @JsonProperty("due_date") //Mapping property dueDate to due_date in response
-    private Date dueDate;
+    private LocalDate dueDate;
 
     private String status;
 

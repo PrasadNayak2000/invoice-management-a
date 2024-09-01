@@ -7,7 +7,7 @@ import com.eg.invoicemanagement.dto.response.InvoiceResponse;
 import com.eg.invoicemanagement.model.Invoice;
 import com.eg.invoicemanagement.model.enums.Status;
 import com.eg.invoicemanagement.service.InvoiceService;
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
@@ -16,7 +16,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import static com.eg.invoicemanagement.model.enums.Status.PENDING;
 
@@ -24,7 +23,7 @@ import static com.eg.invoicemanagement.model.enums.Status.PENDING;
 @Log4j2
 public class InvoiceServiceImpl implements InvoiceService {
 
-    private static final List<Invoice> INVOICES = new ArrayList<>();
+    private final List<Invoice> invoices = new ArrayList<>();
 
     @Override
     public ResponseEntity<Object> createInvoice(InvoiceCreationRequest request) {
@@ -33,19 +32,19 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoice.setAmount(request.getAmount());
         invoice.setDueDate(request.getDueDate());
         invoice.setStatus(PENDING);
-        INVOICES.add(invoice);
+        invoices.add(invoice);
         log.info("Invoice created with id {}", invoice.getId());
         return new ResponseEntity<>(new InvoiceResponse(invoice.getId()), HttpStatus.CREATED);
     }
 
     //This method returns the maximum/last generated invoice id
     private int getLastInvoiceId() {
-        return INVOICES.stream().map(Invoice::getId).mapToInt(id -> id).max().orElse(0);
+        return invoices.stream().map(Invoice::getId).mapToInt(id -> id).max().orElse(0);
     }
 
     @Override
     public ResponseEntity<Object> getAllInvoices() {
-        val response = INVOICES.stream().map(this::getResponse).toList();
+        val response = invoices.stream().map(this::getResponse).toList();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -58,15 +57,15 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public ResponseEntity<Object> doPayment(Integer invoiceId, InvoicePaymentRequest request) {
-        val invoiceOpt = INVOICES.stream().filter(inv -> invoiceId.equals(inv.getId())).findAny();
+        val invoiceOpt = invoices.stream().filter(inv -> invoiceId.equals(inv.getId())).findAny();
         //Checking whether invoice exists with given invoiceId
         if (invoiceOpt.isEmpty())
-            return new ResponseEntity<>("No invoice found with id " + invoiceId, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("No invoice found with id " + invoiceId, HttpStatus.NOT_FOUND);
 
         Invoice invoice = invoiceOpt.get();
 
         //Restricting payment if due date is already passed
-        if (invoice.getDueDate().before(new Date(System.currentTimeMillis())))
+        if (invoice.getDueDate().isBefore(LocalDate.now()))
             return new ResponseEntity<>("Invoice due date is already over", HttpStatus.BAD_REQUEST);
 
         double invoiceAmount = invoice.getAmount();
@@ -87,18 +86,20 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    @Transactional
     public ResponseEntity<Object> processOverdue(OverdueProcessRequest request) {
-        if (INVOICES.isEmpty())
+        if (invoices.isEmpty())
             return new ResponseEntity<>(HttpStatus.OK);
 
         double lateFee = request.getLateFee();
         int overdueDays = request.getOverdueDays();
-        long overdueInMilliSeconds = overdueDays * (1000L * 60L * 60L * 24L); //Total milliseconds of a day 1000 * 60 * 60 *24
+
+        //For storing newly created invoices
+        List<Invoice> newInvoices = new ArrayList<>();
 
         //Update status of each invoice and create a new invoice for each
-        for (Invoice invoice : INVOICES) {
-            if (!PENDING.equals(invoice.getStatus()) || invoice.getDueDate().after(new Date(System.currentTimeMillis())))
+        for (Invoice invoice : invoices) {
+            if (!PENDING.equals(invoice.getStatus()) || invoice.getDueDate().isEqual(LocalDate.now()) ||
+                    invoice.getDueDate().isAfter(LocalDate.now()))
                 continue;
             double amount = invoice.getAmount();
             double paidAmount = invoice.getPaidAmount();
@@ -110,14 +111,14 @@ public class InvoiceServiceImpl implements InvoiceService {
                 invoice.setStatus(Status.VOID);
 
             //Create a new invoice with amount (remaining amount + late fee) and a new overdue
-
             Invoice newInvoice = new Invoice();
             newInvoice.setId(getLastInvoiceId() + 1);
             newInvoice.setAmount((amount - paidAmount) + lateFee);
-            newInvoice.setDueDate(new Date(invoice.getDueDate().getTime() + overdueInMilliSeconds));
+            newInvoice.setDueDate(invoice.getDueDate().plusDays(overdueDays));
             newInvoice.setStatus(PENDING);
-            INVOICES.add(newInvoice);
+            newInvoices.add(newInvoice);
         }
+        invoices.addAll(newInvoices);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -11,7 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,7 +33,7 @@ public class Invoice {
     private Double amount = 0.0;
 
     @Column(name = "due_date", nullable = false)
-    private Date dueDate;
+    private LocalDate dueDate;
 
     @Column(name = "paid_amount", nullable = false)
     private Double paidAmount = 0.0;
