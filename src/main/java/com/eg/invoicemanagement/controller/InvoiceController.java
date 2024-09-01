@@ -33,11 +33,13 @@ public class InvoiceController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> createInvoice(@Validated @RequestBody InvoiceCreationRequest request) {
+        log.info("Create Invoice : {}", request.toString());
         return invoiceService.createInvoice(request);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getAllInvoices() {
+        log.info("Getting all Invoices");
         return invoiceService.getAllInvoices();
     }
 
@@ -46,12 +48,14 @@ public class InvoiceController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> doPayment(@PathVariable("invoice_id") Integer invoiceId,
                                             @Validated @RequestBody InvoicePaymentRequest request) {
+        log.info("Invoice payment amount : {} for invoice id : {}", request.getAmount(), invoiceId);
         return invoiceService.doPayment(invoiceId, request);
     }
 
     @PutMapping(value = OVERDUE_PROCESS, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> processOverdue(@Validated @RequestBody OverdueProcessRequest request) {
+        log.info("Processing all overdue invoices : {}", request.toString());
         return invoiceService.processOverdue(request);
     }
 }

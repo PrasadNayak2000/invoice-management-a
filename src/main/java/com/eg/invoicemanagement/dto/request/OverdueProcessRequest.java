@@ -5,9 +5,11 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class OverdueProcessRequest {
 
     @NotNull(message = "The late fee amount for overdue process cannot be null") //Verifying late fee is not null
