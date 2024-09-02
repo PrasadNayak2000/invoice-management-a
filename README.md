@@ -1,6 +1,6 @@
 # Invoice Management
 
-### The application consists below-mentioned functionalities
+### The application consists below-mentioned functionalities:
 
 * Create Invoice:
     * This API method allows a client to create a new invoice.
