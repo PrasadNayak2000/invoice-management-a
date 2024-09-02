@@ -29,27 +29,27 @@
     * If an invoice is not paid at all, the invoice should be marked as void, a new invoice should be
       created with the amount plus the late fee, and a new overdue.
 
-### Postman API Collection Documentation is available at below link.
-
-```https://documenter.getpostman.com/view/23412093/2sAXjM3X1m```
+### Note
 
 * Datasource autoconfiguration is disabled at main class and application memory is used for the storage of data.
 * Models/Entities structure for table creation is pre-defined so that application can be enhanced to use database
   easily.
+* The API specifications like endpoints, request and response formats are specified in a postman documentation and
+  the link for the same is specified at the end of this file.
 
-## Requirements
+### Requirements
 
 For building and running the application you need:
 
 - https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html
 
-## Running the application locally
+### Running the application locally
 
 There are several ways to run a Spring Boot application on your local machine. One way is to execute the `main` method
 in the `com.eg.invoicemanagement.InvoiceManagementApplication` class from your IDE.
 This will run the application on local port 8080.
 
-## Running the application using Docker
+### Running the application using Docker
 
 Application can be run using docker container and access locally by exposing it to a local port.
 
@@ -65,3 +65,7 @@ Application can be run using docker container and access locally by exposing it 
 * Running the above command downloads the jdk with the version specified at Dockerfile.
 * A docker image and container gets created and all the endpoints are exposed to local port 8080.
 * You can verify the availability of endpoints by making a GET request to ```http://localhost:8080/invoices```.
+
+### APIs Collection Documentation is available at below link.
+
+```https://documenter.getpostman.com/view/23412093/2sAXjM3X1m```
