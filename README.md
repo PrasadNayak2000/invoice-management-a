@@ -43,6 +43,9 @@ For building and running the application you need:
 
 - https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html
 
+  Note : JDK will get auto downloaded while running app through Docker
+  container.
+
 ### Running the application locally
 
 There are several ways to run a Spring Boot application on your local machine. One way is to execute the `main` method
@@ -62,7 +65,7 @@ Application can be run using docker container and access locally by exposing it 
 * Make sure docker-compose.yml file and Dockerfile exist in the root directory.
 * Open the cmd from the root directory of the Spring Boot application.
 * Run ```docker-compose up -d``` command.
-* Running the above command downloads the jdk with the version specified at Dockerfile.
+* Running the above command downloads the JDK with the version specified at Dockerfile.
 * A docker image and container gets created and all the endpoints are exposed to local port 8080.
 * You can verify the availability of endpoints by making a GET request to ```http://localhost:8080/invoices```.
 
