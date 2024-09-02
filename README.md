@@ -1,8 +1,6 @@
 # Invoice Management
 
-Here’s a brief documentation for each of the API methods you provided:
-
-### The application consists below-mentioned features
+### The application consists below-mentioned functionalities
 
 * 1.Create Invoice:
     * This API method allows a client to create a new invoice.
