@@ -2,7 +2,7 @@
 
 ### The application consists below-mentioned functionalities
 
-* 1.Create Invoice:
+* Create Invoice:
     * This API method allows a client to create a new invoice.
     * When a POST request is made to the endpoint with a JSON body containing the invoice details such as amount and due
       date,
